@@ -1,17 +1,37 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Router, Route, IndexRoute, hashHistory } from 'react-router';
 import Warning from './components/Warning/Warning';
+import Navigation from './components/Navigation/Navigation';
 import './App.css';
 
-class App extends Component {
-	render() {
-		const delays = ['R', '6', 'A'];
+const delays = ['R', '6', 'A'];
 
+const Container = (props) => (
+	<div>
+		<Warning
+			delays={delays}
+		/>
+		<Navigation />
+		{props.children}
+	</div>
+);
+
+const Home = () => <h1>Home</h1>;
+
+const FavoriteContainer = () => (
+	<h1>Favorites</h1>
+);
+
+class App extends React.Component {
+	render() {
 		return (
-			<div className="App">
-				<Warning
-					delays={delays}
-				/>
-			</div>
+			<Router history={hashHistory}>
+				<Route path="/" component={Container}>
+					<IndexRoute component={Home} />
+					<Route path="/favorites" component={FavoriteContainer} />
+					<Route path="*" component={Home} />
+				</Route>
+			</Router>
 		);
 	}
 }
