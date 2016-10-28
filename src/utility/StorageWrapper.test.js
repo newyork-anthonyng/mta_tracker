@@ -100,7 +100,7 @@ it('should run callback with success false if promise is rejected', () => {
 	});
 
 	StorageWrapper.initialize();
-	var deferred = StorageWrapper.add('L', cb);
+	const deferred = StorageWrapper.add('L', cb);
 
 	return deferred.then(function() {
 		expect(cbInvoked).toEqual({
@@ -110,10 +110,89 @@ it('should run callback with success false if promise is rejected', () => {
 	});
 });
 
-it('should throw error if not initialized', () => {
+it('should throw error if calling .add() and db not initialized', () => {
 	const error = () => {
 		StorageWrapper.add('L', () => {});
 	};
 
 	expect(error).toThrowError('StorageWrapper: Uninitialized database');
+});
+
+it('should get all tracks', () => {
+	let cbInvoked = false;
+	const cb = (tracks) => { cbInvoked = tracks; };
+
+	dexie.mockImplementation((db_name) => {
+		return {
+			version: jest.fn().mockReturnThis(),
+			stores: jest.fn().mockReturnThis(),
+			open: jest.fn().mockReturnThis(),
+			catch: jest.fn(),
+			tracks: {
+				toArray: () => {
+					return new Promise((resolve, reject) => {
+						process.nextTick(
+							() => {resolve(['A', 'D'])}
+						);
+					});
+				}
+			}
+		};
+	});
+
+	StorageWrapper.initialize();
+	const deferred = StorageWrapper.getAllTracks(cb);
+	return deferred.then(function() {
+		expect(cbInvoked).toEqual({
+			success: true,
+			tracks: ['A', 'D']
+		});
+	});
+});
+
+it('should throw error if calling .getAllTracks() and db not initialized', () => {
+	const error = () => {
+		StorageWrapper.getAllTracks(() => {});
+	};
+
+	expect(error).toThrowError('StorageWrapper: Uninitialized database');
+});
+
+it('should delete line', () => {
+	let cbInvoked = false;
+	const cb = (tracks) => { cbInvoked = tracks; };
+
+	dexie.mockImplementation((db_name) => {
+		return {
+			version: jest.fn().mockReturnThis(),
+			stores: jest.fn().mockReturnThis(),
+			open: jest.fn().mockReturnThis(),
+			catch: jest.fn(),
+			tracks: {
+				toArray: () => {
+					return new Promise((resolve, reject) => {
+						process.nextTick(
+							() => {resolve('A,B')}
+						);
+					});
+				},
+				put: (line) => {
+					return new Promise((resolve, reject) => {
+						process.nextTick(
+							() => {resolve(line)}
+						);
+					});
+				}
+			}
+		};
+	});
+
+	StorageWrapper.initialize();
+	const deferred = StorageWrapper.removeFavorite('A', cb);
+	return deferred.then(function() {
+		expect(cbInvoked).toEqual({
+			success: true,
+			name: 'B'
+		});
+	});
 });

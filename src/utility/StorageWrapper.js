@@ -29,6 +29,30 @@ const StorageWrapper = (() => {
 			});
 	};
 
+	const getAllTracks = (cb) => {
+		if(!db) {
+			throw new Error('StorageWrapper: Uninitialized database');
+		}
+
+		return db[db_store].toArray()
+			.then((tracks) => {
+				cb({ success: true, tracks: tracks });
+			}).catch(function(e) {
+				cb({ success: false, message: e });
+			});
+	};
+
+	const removeFavorite = (line, cb) => {
+		return db[db_store].toArray()
+			.then((tracks) => {
+				const myTracks = tracks.split(',');
+				const updatedTracks = myTracks.filter((track) => track !== line).join(',');
+				return add(updatedTracks, cb);
+			}).catch(function(e) {
+				cb({ success: false, mesage: e });
+			});
+	};
+
 	const _reset = () => {
 		db = null;
 	};
@@ -36,6 +60,8 @@ const StorageWrapper = (() => {
 	return {
 		initialize,
 		add,
+		getAllTracks,
+		removeFavorite,
 		_reset
 	};
 })();

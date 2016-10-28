@@ -19,7 +19,7 @@ it('renders an Entry field', () => {
 	const wrapper = shallow(<FavoriteTrackList />);
 	const entry = <FavoriteTrackEntry />;
 
-	expect(wrapper.contains(entry)).toEqual(true);
+	expect(wrapper.containsMatchingElement(entry)).toEqual(true);
 });
 
 it('renders a Track List with appropriate tracks', () => {

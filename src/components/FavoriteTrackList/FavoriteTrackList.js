@@ -2,10 +2,10 @@ import React from 'react';
 import FavoriteTrackEntry from '../FavoriteTrackEntry/FavoriteTrackEntry';
 import TrackList from '../TrackList/TrackList';
 
-const FavoriteTrackList = ({ tracks }) => {
+const FavoriteTrackList = ({ tracks, onSubmit }) => {
 	return (
 		<div>
-			<FavoriteTrackEntry />
+			<FavoriteTrackEntry onSubmit={onSubmit} />
 			<TrackList
 				title="Favorite Tracks"
 				tracks={tracks}
@@ -15,7 +15,8 @@ const FavoriteTrackList = ({ tracks }) => {
 };
 
 FavoriteTrackList.propTypes = {
-	tracks: React.PropTypes.array
+	tracks: React.PropTypes.array,
+	onSubmit: React.PropTypes.func
 };
 
 FavoriteTrackList.defaultProps = {
